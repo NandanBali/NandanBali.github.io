@@ -10,7 +10,6 @@ const STATUS_ENDPOINT = "status-json.xsl";
 const RADIO_ENDPOINT = "radio";
 const STREAM_URL = BACK_URL + RADIO_ENDPOINT;
 
-// UI helpers
 function setPlaying(isPlaying) {
     if (isPlaying) {
         playBtn.classList.add('playing');
@@ -30,10 +29,8 @@ function setStatus(text, isLive = false) {
     }
 }
 
-// Set initial state
 setStatus('Ready');
 
-// Handle audio errors - important for Firefox
 audio.addEventListener('error', (e) => {
     console.error('Audio error:', e);
     setStatus('Connection Error');
@@ -55,8 +52,6 @@ audio.addEventListener('playing', () => {
 });
 
 function startStream() {
-    // Firefox handles streams better when src is set directly
-    // Adding a cache-busting parameter helps prevent stale connections
     audio.src = STREAM_URL
     audio.load();
 
@@ -75,7 +70,6 @@ function startStream() {
 
 function stopStream() {
     audio.pause();
-    // Clear the source to fully disconnect from stream (helps Firefox)
     audio.removeAttribute('src');
     audio.load();
     setPlaying(false);
