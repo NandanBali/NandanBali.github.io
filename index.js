@@ -84,6 +84,8 @@ playBtn.addEventListener('click', () => {
     }
 });
 
+// nothing much to say here
+
 async function fetchTrackInfo() {
     try {
         const response = await fetch(BACK_URL + STATUS_ENDPOINT, { cache: 'no-store' });
