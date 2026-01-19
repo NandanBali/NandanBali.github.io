@@ -5,7 +5,7 @@ const artistEl = document.getElementById('track-artist');
 const statusEl = document.getElementById('connection-status');
 const visualizer = document.querySelector('.visualizer');
 
-const BACK_URL = "http://ec3.yesstreaming.net:2275/";
+const BACK_URL = "https://ec3.yesstreaming.net:2275/";
 const STATUS_ENDPOINT = "status-json.xsl";
 const RADIO_ENDPOINT = "stream";
 const STREAM_URL = BACK_URL + RADIO_ENDPOINT;
