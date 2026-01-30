@@ -5,9 +5,9 @@ const artistEl = document.getElementById('track-artist');
 const statusEl = document.getElementById('connection-status');
 const visualizer = document.querySelector('.visualizer');
 
-const BACK_URL = "https://ec3.yesstreaming.net:2275/";
-const STATUS_ENDPOINT = "status-json.xsl";
-const RADIO_ENDPOINT = "stream";
+const BACK_URL = "https://az13.yesstreaming.net:8050";
+const STATUS_ENDPOINT = "/status-json.xsl";
+const RADIO_ENDPOINT = "/radio.mp3";
 const STREAM_URL = BACK_URL + RADIO_ENDPOINT;
 
 function setPlaying(isPlaying) {
@@ -52,7 +52,10 @@ audio.addEventListener('playing', () => {
 });
 
 function startStream() {
-    audio.src = STREAM_URL
+    // Add cache-busting parameter to avoid browser caching issues
+    const streamUrl = STREAM_URL + '?nocache=' + Date.now();
+    audio.src = streamUrl;
+    audio.crossOrigin = 'anonymous';
     audio.load();
 
     const playPromise = audio.play();
@@ -62,8 +65,14 @@ function startStream() {
             setStatus('Live', true);
         }).catch((error) => {
             console.error('Error playing audio:', error);
-            setStatus('Click to Play');
-            setPlaying(false);
+            // If autoplay fails, try without crossOrigin (fallback for CORS issues)
+            audio.crossOrigin = null;
+            audio.src = streamUrl;
+            audio.play().catch(err => {
+                console.error('Fallback also failed:', err);
+                setStatus('Click to Play');
+                setPlaying(false);
+            });
         });
     }
 }
@@ -90,9 +99,8 @@ async function fetchTrackInfo() {
     try {
         const response = await fetch(BACK_URL + STATUS_ENDPOINT, { cache: 'no-store' });
         const data = await response.json();
-        const source = data.icestats.source.title.split(' - ');
-        titleEl.textContent =  source[1] ?? 'Unknown Track';
-        artistEl.textContent = source[0] ?? 'Pilani Town Radio';
+        titleEl.textContent =  data.icestats.source.title;
+        artistEl.textContent = data.icestats.source.artist;
     } catch (error) {
         console.error('Error fetching track info:', error);
     }
